@@ -7,19 +7,42 @@ import Grid from '@mui/material/Grid'
 import Box from '@mui/material/Box'
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined'
 import Typography from '@mui/material/Typography'
+import {useState} from "react";
 
-// TODO make inner registration form and move input name and surname to inner form
+// TODO make inner registration form and move input name and surname to it
+
 
 export default function SignUp() {
+    const [formType, setFormType] = useState('login')
+
+    const formTexts = {
+        login: {
+            formName: 'Вход',
+            submitButtonText: 'Войти',
+            changeFormTextLink: 'Еще не зарегистрированы? Зарегистрироваться'
+        },
+        signUp: {
+            formName: 'Регистрация',
+            submitButtonText: 'Зарегистрироваться',
+            changeFormTextLink: 'Уже зарегистрированы? Войти'
+        }
+    }
+
+    const handleFormType = (event) => {
+        event.preventDefault()
+        setFormType((type) => type === 'login' ? 'signUp' : 'login')
+    }
+
     const handleSubmit = (event) => {
         event.preventDefault()
-        const data = new FormData(event.currentTarget);
-        // eslint-disable-next-line no-console
+        const data = new FormData(event.currentTarget)
+        const sFunc = formType === 'login' ? 'Входим' : 'Регистрируем'
         console.log({
             email: data.get('email'),
             password: data.get('password'),
-        });
-    };
+            action: sFunc
+        })
+    }
 
     return (
             <>
@@ -35,31 +58,10 @@ export default function SignUp() {
                         <LockOutlinedIcon />
                     </Avatar>
                     <Typography component="h1" variant="h5">
-                        Регистрация
+                        { formTexts[formType].formName }
                     </Typography>
                     <Box component="form" noValidate onSubmit={handleSubmit} sx={{ mt: 3 }}>
                         <Grid container spacing={2}>
-                            <Grid item xs={12} sm={6}>
-                                <TextField
-                                    autoComplete="given-name"
-                                    name="firstName"
-                                    required
-                                    fullWidth
-                                    id="firstName"
-                                    label="Имя"
-                                    autoFocus
-                                />
-                            </Grid>
-                            <Grid item xs={12} sm={6}>
-                                <TextField
-                                    required
-                                    fullWidth
-                                    id="lastName"
-                                    label="Фамилия"
-                                    name="lastName"
-                                    autoComplete="family-name"
-                                />
-                            </Grid>
                             <Grid item xs={12}>
                                 <TextField
                                     required
@@ -82,6 +84,17 @@ export default function SignUp() {
                                     autoComplete="new-password"
                                 />
                             </Grid>
+                            {formType === 'signUp' && <Grid item xs={12}>
+                                <TextField
+                                    required
+                                    fullWidth
+                                    name="repeat-password"
+                                    label="Еще раз пароль"
+                                    type="password"
+                                    id="repeat-password"
+                                    autoComplete="new-password"
+                                />
+                            </Grid>}
                         </Grid>
                         <Button
                             type="submit"
@@ -89,12 +102,12 @@ export default function SignUp() {
                             variant="contained"
                             sx={{ mt: 3, mb: 2 }}
                         >
-                            Зарегистрироваться
+                            { formTexts[formType].submitButtonText }
                         </Button>
                         <Grid container justifyContent="flex-end">
                             <Grid item>
-                                <Link href="#" variant="body2">
-                                    Уже зарегистрированы? Залогиниться
+                                <Link href="#" onClick={handleFormType} variant="body2">
+                                    { formTexts[formType].changeFormTextLink }
                                 </Link>
                             </Grid>
                         </Grid>
